@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 VERT="\\033[1;32m"
 NORMAL="\\033[0;39m"
 ROUGE="\\033[1;31m"
@@ -34,8 +34,8 @@ mysql_sql() {
 step_1_upgrade() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}Commence l'étape 1 de la révision${NORMAL}"
-
-  read -p "Voulez-vous mettre à jour le système ? (Y/n)" -n 1 -r
+  echo "Voulez-vous mettre à jour le système ? (Y/n)"
+  read -p -n 1 -r
   echo    # (optional) move to a new line
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
