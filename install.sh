@@ -72,7 +72,7 @@ step_2_database() {
   echo "${VERT}étape 2 base de données réussie${NORMAL}"
 }
 
-step_4_kogimanager_download() {
+step_3_kogimanager_download() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}Commence l'étape 3 téléchargement de Kogimanager${NORMAL}"
   git clone https://github.com/emahrv/Kogimanager.git
@@ -85,7 +85,7 @@ step_4_kogimanager_download() {
     fi
 }
 
-step_5_kogimanager_database_configuration() {
+step_4_kogimanager_database_configuration() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}commence l'étape 4 configuration de la base de donnée de Kogimanager${NORMAL}"
   echo "ADD USER 'admin'@'localhost';" | mysql -uroot -p${MYSQL_ROOT_PASSWD} > /dev/null 2>&1
@@ -95,7 +95,7 @@ step_5_kogimanager_database_configuration() {
   echo "${VERT}étape 4 configuration de la base de donnée de Kogimanager réussie${NORMAL}"
 }
 
-step_6_kogimanager_configuration() {
+step_5_kogimanager_configuration() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}commence l'étape 5 configuration de Kogimanager${NORMAL}"
   cat <<EOF >.env
