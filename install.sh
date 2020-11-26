@@ -31,40 +31,20 @@ mysql_sql() {
   fi
 }
 
-step_1_upgrade() {
+step_1_mainpackage() {
   echo "---------------------------------------------------------------------"
-  echo "${JAUNE}Commence l'étape 1 de la révision${NORMAL}"
-  echo -p "Voulez-vous mettre à jour le système ? (Y/n)"
-  read -n 1 -r
-  echo    # (optional) move to a new line
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-    echo "${VERT}étape 1 de la révision réussie${NORMAL}"
-  else
-    echo "---------------------------------------------------------------------"
-    echo "${JAUNE}Début de la mise à jour système${NORMAL}"
-    
-    apt-get update
-    apt-get -f install
-    apt-get -y dist-upgrade
-    echo "${VERT}étape 1 de la révision réussie${NORMAL}"
-  fi
-}
-
-step_2_mainpackage() {
-  echo "---------------------------------------------------------------------"
-  echo "${JAUNE}Commence l'étape 2 paquet principal${NORMAL}"
+  echo "${JAUNE}Commence l'étape 1 paquet principal${NORMAL}"
   apt_install ntp ca-certificates unzip curl sudo cron
   apt-get -y install mosquitto
   apt-get -y install git
   apt-get -y install nodejs
   npm install forever -g
-  echo "${VERT}étape 2 paquet principal réussie${NORMAL}"
+  echo "${VERT}étape 1 paquet principal réussie${NORMAL}"
 }
 
-step_3_database() {
+step_2_database() {
   echo "---------------------------------------------------------------------"
-  echo "${JAUNE}Commence l'étape 3 base de données${NORMAL}"
+  echo "${JAUNE}Commence l'étape 2 base de données${NORMAL}"
   echo "mysql-server mysql-server/root_password password ${MYSQL_ROOT_PASSWD}" | debconf-set-selections
   echo "mysql-server mysql-server/root_password_again password ${MYSQL_ROOT_PASSWD}" | debconf-set-selections
   apt_install mariadb-client mariadb-common mariadb-server
@@ -89,29 +69,21 @@ step_3_database() {
       exit 1
     fi
   fi
-  echo "${VERT}étape 3 base de données réussie${NORMAL}"
+  echo "${VERT}étape 2 base de données réussie${NORMAL}"
 }
 
 step_4_kogimanager_download() {
   echo "---------------------------------------------------------------------"
-  echo "${JAUNE}Commence l'étape 4 téléchargement de Kogimanager${NORMAL}"
+  echo "${JAUNE}Commence l'étape 3 téléchargement de Kogimanager${NORMAL}"
   
   dl_kogimanager() {
     echo "${JAUNE}Commence le téléchargement de Kogimanager${NORMAL}"
     git clone https://github.com/emahrv/Kogimanager.git
     if [ $? -ne 0 ]; then
-      echo "${ROUGE}Ne peut télécharger Kogimanager depuis github${NORMAL}"
-      read -p "Réessayer ? (Y/n)" -n 1 -r
-      echo    # (optional) move to a new line
-      if [[ ! $REPLY =~ ^[Yy]$ ]]
-      then
-        echo "${ROUGE}Annulation${NORMAL}"
-        exit 1
-      else
-        dl_kogimanager
-      fi
+      echo "${ROUGE}Ne peut télécharger Kogimanager depuis github - Annulation${NORMAL}"
+      exit 1
     else
-      echo "${VERT}étape 4 téléchargement de Kogimanager réussie${NORMAL}"
+      echo "${VERT}étape 3 téléchargement de Kogimanager réussie${NORMAL}"
       cd Kogimanager
     fi
   }
@@ -121,23 +93,23 @@ step_4_kogimanager_download() {
 
 step_5_kogimanager_database_configuration() {
   echo "---------------------------------------------------------------------"
-  echo "${JAUNE}commence l'étape 5 configuration de la base de donnée de Kogimanager${NORMAL}"
+  echo "${JAUNE}commence l'étape 4 configuration de la base de donnée de Kogimanager${NORMAL}"
   echo "ADD USER 'admin'@'localhost';" | mysql -uroot -p${MYSQL_ROOT_PASSWD} > /dev/null 2>&1
   mysql_sql "CREATE USER 'admin'@'localhost' IDENTIFIED BY '${MYSQL_ADMIN_PASSWD}';"
   mysql_sql "GRANT ALL PRIVILEGES ON admin.* TO 'admin'@'localhost';"
   mysql_sql "source kogimanager.sql"
-  echo "${VERT}étape 5 configuration de la base de donnée de Kogimanager réussie${NORMAL}"
+  echo "${VERT}étape 4 configuration de la base de donnée de Kogimanager réussie${NORMAL}"
 }
 
 step_6_kogimanager_configuration() {
   echo "---------------------------------------------------------------------"
-  echo "${JAUNE}commence l'étape 6 configuration de Kogimanager${NORMAL}"
+  echo "${JAUNE}commence l'étape 5 configuration de Kogimanager${NORMAL}"
   cat <<EOF >.env
   SESSION_SECRET= $SESSION_SECRET,
   MYSQL_ADMIN_PASSWD= $MYSQL_ADMIN_PASSWD
 EOF
 
-  echo "${VERT}étape 6 configuration de Kogimanager réussie${NORMAL}"
+  echo "${VERT}étape 5 configuration de Kogimanager réussie${NORMAL}"
 }
 
 STEP=0
@@ -182,26 +154,23 @@ echo "${JAUNE}Bienvenue dans l'installateur de Kogimanager${NORMAL}"
 case ${STEP} in
   0)
   echo "${JAUNE}Commence toutes les étapes de l'installation${NORMAL}"
-  step_1_upgrade
-  step_2_mainpackage
-  step_3_database
-  step_4_kogimanager_download
-  step_5_kogimanager_database_configuration
-  step_6_kogimanager_configuration
+  step_1_mainpackage
+  step_2_database
+  step_3_kogimanager_download
+  step_4_kogimanager_database_configuration
+  step_5_kogimanager_configuration
   echo "/!\ IMPORTANT /!\ Le mot de passe root MySQL est ${MYSQL_ROOT_PASSWD}"
   echo "Installation finie. Un redémarrage devrait être effectué"
   ;;
-  1) step_1_upgrade
+  2) step_1_mainpackage
   ;;
-  2) step_2_mainpackage
+  3) step_2_database
   ;;
-  3) step_3_database
+  4) step_3_kogimanager_download
   ;;
-  4) step_4_kogimanager_download
+  5) step_4_kogimanager_database_configuration
   ;;
-  5) step_5_kogimanager_database_configuration
-  ;;
-  6) step_6_kogimanager_configuration
+  6) step_5_kogimanager_configuration
   ;;
   *) echo "${ROUGE}Désolé, Je ne peux sélectionner une ${STEP} étape pour vous !${NORMAL}"
   ;;
