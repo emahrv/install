@@ -34,7 +34,7 @@ mysql_sql() {
 step_1_upgrade() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}Commence l'étape 1 de la révision${NORMAL}"
-  echo "Voulez-vous mettre à jour le système ? (Y/n)"
+  echo -p "Voulez-vous mettre à jour le système ? (Y/n)"
   read -n 1 -r
   echo    # (optional) move to a new line
   if [[ ! $REPLY =~ ^[Yy]$ ]]
