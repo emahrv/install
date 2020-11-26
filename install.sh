@@ -75,10 +75,7 @@ step_2_database() {
 step_4_kogimanager_download() {
   echo "---------------------------------------------------------------------"
   echo "${JAUNE}Commence l'étape 3 téléchargement de Kogimanager${NORMAL}"
-  
-  dl_kogimanager() {
-    echo "${JAUNE}Commence le téléchargement de Kogimanager${NORMAL}"
-    git clone https://github.com/emahrv/Kogimanager.git
+  git clone https://github.com/emahrv/Kogimanager.git
     if [ $? -ne 0 ]; then
       echo "${ROUGE}Ne peut télécharger Kogimanager depuis github - Annulation${NORMAL}"
       exit 1
@@ -86,9 +83,6 @@ step_4_kogimanager_download() {
       echo "${VERT}étape 3 téléchargement de Kogimanager réussie${NORMAL}"
       cd Kogimanager
     fi
-  }
-
-  dl_kogimanager  
 }
 
 step_5_kogimanager_database_configuration() {
