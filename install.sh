@@ -91,7 +91,7 @@ step_4_kogimanager_download() {
     git clone -b $1 https://github.com/emahrv/Kogimanager.git
     if [ $? -ne 0 ]; then
       echo "${ROUGE}Ne peut télécharger Kogimanager depuis github${NORMAL}"
-      read -p "Réessayer ? (Y/n)" -n 1 -r
+      read -p "Réessayer ? (Y/n)" 1 -r
       echo    # (optional) move to a new line
       if [[ ! $REPLY =~ ^[Yy]$ ]]
       then
