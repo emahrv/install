@@ -111,7 +111,7 @@ do
 read -p "Quelle version de Kogimanager voulez-vous télécharger ? 0- Défaut 1- Particulier 2- MMO? " version
   case $version in
    [0]* ) name='Défaut'
-          branch='master'
+          branch='main'
           echo "Ok, mise en place du téléchargement de Kogimanager version " $name
           dl_kogimanager "$branch"
            break;;
