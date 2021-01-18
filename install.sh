@@ -47,7 +47,10 @@ step_2_mainpackage() {
   apt_install ntp ca-certificates unzip curl sudo cron
   apt-get -y install mosquitto
   apt-get -y install git
-  apt-get -y install nodejs
+  apt -y remove node
+  apt -y remove nodejs
+  curl -sL https://deb.nodesource.com/setup_10.x|sudo -E bash -
+  apt-get install -y nodejs
   apt-get -y install npm
   echo "${VERT}étape 2 paquet principal réussie${NORMAL}"
 }
